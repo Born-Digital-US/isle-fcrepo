@@ -39,7 +39,7 @@
     <!-- ISLE 8 Change -->
     <bean name="modeshapeRepofactory"
         class="org.fcrepo.kernel.modeshape.spring.ModeShapeRepositoryFactoryBean"
-        p:repositoryConfiguration="file://${FCREPO_CONFIG_DIR}/${FCREPO_REPOSITORY_TYPE}-repository.json"
+        p:repositoryConfiguration="file://${FCREPO_CONFIG_DIR}/${FCREPO_MODESHAPE_TYPE}-repository.json"
         depends-on="authenticationProvider"/>
   
     <bean name="authenticationProvider" class="org.fcrepo.auth.common.ShiroAuthenticationProvider"/>
