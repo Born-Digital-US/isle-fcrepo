@@ -1,7 +1,7 @@
 FROM tomcat:8.5-jdk8
 
-ENV CATALINA_HOME /usr/local/tomcat \
-    PATH $CATALINA_HOME/bin:$PATH
+ENV CATALINA_HOME=/usr/local/tomcat \
+    PATH=$CATALINA_HOME/bin:$PATH
 
 ## Dependencies
 RUN GEN_DEP_PACKS="curl" && \
