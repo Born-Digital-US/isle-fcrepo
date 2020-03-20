@@ -1,3 +1,6 @@
+/*
+ * Islandora CLAW namespaces
+ */
 <acl = 'http://www.w3.org/ns/auth/acl#'>
 <bf = 'http://id.loc.gov/ontologies/bibframe/'>
 <cc = 'http://creativecommons.org/ns#'>

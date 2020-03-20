@@ -1,6 +1,0 @@
-http://activemq:8161
-http://crayfits:8000
-http://fits:8080
-http://homarus:80
-http://houdini:80
-http://hypercube:80

@@ -10,10 +10,10 @@
   "storage" : {
       "persistence": {
           "type" : "db",
-          "connectionUrl": "jdbc:mysql://{{ fcrepo_db_host }}:{{ fcrepo_db_port }}/{{ fcrepo_db_name }}?createDatabaseIfNotExist=true",
+          "connectionUrl": "jdbc:mysql://${FCREPO_DB_HOST}:${FCREPO_DB_PORT}/${FCREPO_DB_NAME}?createDatabaseIfNotExist=true",
           "driver" : "com.mysql.jdbc.Driver",
-          "username" : "{{ fcrepo_db_user }}",
-          "password" : "{{ fcrepo_db_password }}"
+          "username" : "${FCREPO_DB_USER}",
+          "password" : "${FCREPO_DB_PASSWORD}"
       },
       "binaryStorage" : {
           "type" : "file",
@@ -35,5 +35,5 @@
       "initialTime" : "00:00",
       "intervalInHours" : 24
   },
-  "node-types" : ["fedora-node-types.cnd", "file:/opt/fcrepo/configs/claw.cnd"]
+  "node-types" : ["fedora-node-types.cnd", "file:/opt/fcrepo/configs/${FCREPO_NAMESPACES}.cnd"]
 }

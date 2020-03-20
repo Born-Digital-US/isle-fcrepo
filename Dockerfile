@@ -12,79 +12,61 @@ RUN GEN_DEP_PACKS="curl" && \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Tomcat Users
-# can this be a config file / rootfs (preconfigure please with .env ?)
-RUN sed -i '$i<role rolename="fedoraUser"/>$i<role rolename="fedoraAdmin"/>$i<role rolename="manager-gui"/>$i<user username="testuser" password="password1" roles="fedoraUser"/>$i<user username="adminuser" password="password2" roles="fedoraUser"/>$i<user username="fedoraAdmin" password="secret3" roles="fedoraAdmin"/>$i<user username="fedora4" password="fedora4" roles="manager-gui"/>' /usr/local/tomcat/conf/tomcat-users.xml
+### Fedora Install
 
-# JAVA_OPTS - Adding the Fedora Variables to JAVA_OPTS
-# Should be a config file no?
-# How to link back to env?
+ENV JMS_BROKER_URL=tcp://activemq:61616 \
+    JAVA_MAX_MEM=${JAVA_MAX_MEM:-2G} \
+    JAVA_MIN_MEM=${JAVA_MIN_MEM:-512M} \
+    JAVA_OPTS='-Djava.awt.headless=true -server -Xmx${JAVA_MAX_MEM} -Xms${JAVA_MIN_MEM} -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true' \
+    FCREPO_VERSION=${FCREPO_VERSION:-5.1.0} \
+    FCREPO_HOME=/opt/fcrepo/data \
+    FCREPO_CONFIG_DIR=/opt/fcrepo/config \
+    # jdbc-mysql, jdbc-postgresql, file-simple
+    FCREPO_MODESHAPE_TYPE=jdbc-mysql \
+    FCREPO_AUDIT_CONTAINER=audit \
+    FCREPO_AUTH_HEADER_NAME=X-Islandora \
+    FCREPO_SPRING_CONFIG=fcrepo-config.xml \
+    FCREPO_NAMESPACES=claw \
+    FCREPO_DB_TYPE=mysql \
+    FCREPO_DB=fcrepo_db \
+    FCREPO_DB_USER=fedora \
+    FCREPO_DB_PASSWORD=fedora_pw \
+    FCREPO_DB_HOST=mariadb \
+    FCREPO_DB_PORT=3306 \
+    FCREPO_USER=fedoraUser \
+    FEDORA_USER_PASSWORD=fedoraUser_pw \
+    FEDORA_ADMIN=fedoraAdmin \
+    FEDORA_ADMIN_PASSWORD=fedoraAdmin_pw
 
 # put all fcrepo opts in here for all configs
-# envs in javaopts, pick a modeshape config
-RUN echo 'JAVA_OPTS="$JAVA_OPTS -Dfcrepo.modeshape.configuration=classpath:/config/'$ModeshapeConfig'/repository.json '$JDBCConfig' -Dfcrepo.home=/mnt/ingest -Dfcrepo.audit.container=/audit"' > $CATALINA_HOME/bin/setenv.sh \
-	&& chmod +x $CATALINA_HOME/bin/setenv.sh
-
-# which configs to use for islandora?
-# JAVA_OPTS:  qadan
-# this is file system which is not prod ready
--Dfcrepo.modeshape.configuration=file:///opt/fcrepo/config/repository.json
--Dfcrepo.home=/opt/fcrepo/data 
--Dfcrepo.spring.configuration=file:///opt/fcrepo/config/fcrepo-config.xml
-
-# JAVA_OPTS: fcrepo4
--Dfcrepo.modeshape.configuration=classpath:/config/'$ModeshapeConfig'/repository.json '$JDBCConfig' 
--Dfcrepo.home=/mnt/ingest
--Dfcrepo.audit.container=/audit
-
-# JAVA_OPTS: official doc instructions for config
-# customize repo.json file
-JAVA_OPTS="${JAVA_OPTS} -Dfcrepo.modeshape.configuration=classpath:/config/jdbc-mysql/repository.json"
-JAVA_OPTS="${JAVA_OPTS} -Dfcrepo.mysql.username=<username>"
-JAVA_OPTS="${JAVA_OPTS} -Dfcrepo.mysql.password=<password>"
-JAVA_OPTS="${JAVA_OPTS} -Dfcrepo.mysql.host=<default=localhost>"
-JAVA_OPTS="${JAVA_OPTS} -Dfcrepo.mysql.port=<default=3306>"
-
-
-### Fedora Install
-# https://github.com/fcrepo4/fcrepo4/releases/download/fcrepo-5.1.0/fcrepo-webapp-5.1.0.war
-# write an env for version number ala ISLE 7
+RUN echo 'JAVA_OPTS="$JAVA_OPTS -Dfcrepo.modeshape.configuration=classpath:/config/'$FCREPO_MODESHAPE_TYPE'-repository.json -Dfcrepo.'$FCREPO_DB_TYPE'.username='$FEDORA_ADMIN' -Dfcrepo.'$FCREPO_DB_TYPE'.password='$FEDORA_ADMIN_PASSWORD' -Dfcrepo.'$FCREPO_DB_TYPE'.host='$FCREPO_DB_HOST' -Dfcrepo.'$FCREPO_DB_TYPE'.port='$FCREPO_DB_PORT' -Dfcrepo.home='$FCREPO_HOME' -Dfcrepo.spring.configuration=file:///'$FCREPO_CONFIG_DIR'/'$FCREPO_SPRING_CONFIG' -Dfcrepo.audit.container=/'$FCREPO_AUDIT_CONTAINER'"' > $CATALINA_HOME/bin/setenv.sh && \
+	chmod +x $CATALINA_HOME/bin/setenv.sh
 
 # Install Fedora 5
-ARG FEDORA_TAG=
-ARG FedoraConfig=
-# https://github.com/fcrepo4/fcrepo4/tree/5.1.x-maintenance/fcrepo-configs/src/main/resources/config
-ARG ModeshapeConfig=jdbc-mysql-repository
-ARG JDBCConfig=
+ARG FCREPO_VERSION
+ARG FCREPO_CONFIG_DIR
+ARG FCREPO_HOME
 
-
+# Download FCREPO war file and copy to tomcat/webapps dir
 RUN cd /tmp \
-	&& curl -fSL https://github.com/fcrepo4/fcrepo4/releases/download/fcrepo-$FEDORA_TAG/fcrepo-webapp-$FEDORA_TAG.war -o fcrepo.war \
+	&& curl -fSL https://github.com/fcrepo4/fcrepo4/releases/download/fcrepo-$FCREPO_VERSION/fcrepo-webapp-$FCREPO_VERSION.war -o fcrepo.war \
 	&& cp fcrepo.war /usr/local/tomcat/webapps/fcrepo.war
 
 # Add the /opt/fcrepo directory and contents
 COPY rootfs /
 
+# Fix permissions on fcrepo dir for tomcat
 RUN chown -Rv tomcat:tomcat /opt/fcrepo && \  
     chmod -Rv 644  /opt/fcrepo/config && \
 
 
-### ----------------- Data Mounts / Volumes  -----------------
-## From Fedora docs
-mkdir -p /opt/fcrepo/data/objects
-^ everything is populated under
-
-# This should be bind mounted
-if using a database which one or is the database remote 
-# database, file store or S3 option (not well tested)
-
 ### ----------------- SYN -----------------
 
-ENV SYN_JAR_URL: The latest stable release of the Syn JAR from the releases page. Specifically, the JAR compiled as -all.jar is required.
-wget -P /opt/tomcat/lib SYN_JAR_URL
+#ENV SYN_JAR_URL: The latest stable release of the Syn JAR from the releases page. Specifically, the JAR compiled as -all.jar is required.
+#wget -P /opt/tomcat/lib SYN_JAR_URL
 # Ensure the library has the correct permissions.
-chown -R tomcat:tomcat /opt/tomcat/lib
-chmod -R 640 /opt/tomcat/lib
+#chown -R tomcat:tomcat /opt/tomcat/lib
+#chmod -R 640 /opt/tomcat/lib
 
 # Placeholder for Generating an SSL Key for Syn
 # microservices and SYN use this key pair (private and public) and share it
@@ -98,15 +80,8 @@ chmod -R 640 /opt/tomcat/lib
 
 # restart tomcat
 
-
-## Volume Fedora Data
-VOLUME /usr/local/fedora/data/activemq-data /usr/local/fedora/data/datastreamStore \
-    /usr/local/fedora/data/fedora-xacml-policies /usr/local/fedora/data/objectStore \
-    /usr/local/fedora/data/resourceIndex
-
 EXPOSE 8080
 
-# or is this /opt/fcrepo
-WORKDIR /usr/local/tomcat 
+WORKDIR /opt/fcrepo 
 
 ENTRYPOINT ["/init"]

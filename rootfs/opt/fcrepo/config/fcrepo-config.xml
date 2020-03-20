@@ -36,10 +36,10 @@
       4. Uncomment the "authenticationProvider" bean definition below.
     -->
 
-    <!-- ISLE 8 ENV -->
+    <!-- ISLE 8 Change -->
     <bean name="modeshapeRepofactory"
         class="org.fcrepo.kernel.modeshape.spring.ModeShapeRepositoryFactoryBean"
-        p:repositoryConfiguration="file://${fcrepo.config.dir}/${fcrepo.repository.type}.json"
+        p:repositoryConfiguration="file://${FCREPO_CONFIG_DIR}/${FCREPO_REPOSITORY_TYPE}-repository.json"
         depends-on="authenticationProvider"/>
   
     <bean name="authenticationProvider" class="org.fcrepo.auth.common.ShiroAuthenticationProvider"/>
@@ -49,10 +49,10 @@
     <!-- **************************
               Authentication
          ************************** -->
-
+    <!-- ISLE 8 - Islandora 8 header -->
     <!-- Optional PrincipalProvider filter that will inspect the request header, "some-header", for user role values -->
     <bean name="headerProvider" class="org.fcrepo.auth.common.HttpHeaderPrincipalProvider">
-        <property name="headerName" value="${fcrepo.auth.header.name}"/>
+        <property name="headerName" value="${FCREPO_AUTH_HEADER_NAME}"/>
         <property name="separator" value=","/>
     </bean>
 
@@ -200,12 +200,10 @@
     <!-- ActiveMQ connection -->  
     <bean id="connectionFactory"
         class="org.apache.activemq.ActiveMQConnectionFactory" depends-on="jmsBroker"
-        p:brokerURL="vm://${fcrepo.jms.host:localhost}:${fcrepo.dynamic.jms.port:61616}?create=false"/>
-
+        p:brokerURL="${JMS_BROKER_URL}"/>
     <!-- JMS Broker configuration -->
     <bean name="jmsBroker" class="org.apache.activemq.xbean.BrokerFactoryBean"
       p:config="${fcrepo.activemq.configuration:classpath:/config/activemq.xml}" p:start="true"/>
-
 
     <!-- translates events into JMS header-only format-->
     <bean class="org.fcrepo.jms.DefaultMessageFactory"/>
