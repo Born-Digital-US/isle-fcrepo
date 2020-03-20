@@ -56,8 +56,7 @@ RUN cd /tmp \
 COPY rootfs /
 
 # Fix permissions on fcrepo dir for tomcat
-RUN chown -Rv tomcat:tomcat /opt/fcrepo && \  
-    chmod -Rv 644  /opt/fcrepo/config
+RUN chmod -Rv 644  /opt/fcrepo/config
 
 
 ### ----------------- SYN -----------------
