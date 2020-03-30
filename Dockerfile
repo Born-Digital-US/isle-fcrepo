@@ -29,16 +29,16 @@ ENV CATALINA_HOME=/usr/local/tomcat \
 
 ## Install Tomcat admin
 
-#ENV TOMCAT_MAJOR=${TOMCAT_MAJOR:-8} \
-#    TOMCAT_VERSION=${TOMCAT_VERSION:-8.5.53}
-#
-#RUN cd /tmp && \
-#    curl -O -L "http://apache.mirrors.pair.com/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz" && \
-#    tar xzf /tmp/apache-tomcat-$TOMCAT_VERSION.tar.gz && \
-#    cp -Rv /tmp/apache-tomcat-$TOMCAT_VERSION/webapps/ROOT /usr/local/tomcat/webapps/ && \
-#    cp -Rv /tmp/apache-tomcat-$TOMCAT_VERSION/webapps/host-manager /usr/local/tomcat/webapps/ && \
-#    cp -Rv /tmp/apache-tomcat-$TOMCAT_VERSION/webapps/manager /usr/local/tomcat/webapps/ && \
-#    rm -rf /tmp/apache-tomcat-$TOMCAT_VERSION
+# Official tomcat docker image doesn't enable these by default
+# https://github.com/docker-library/tomcat/issues/184
+RUN cp -rv /usr/local/tomcat/webapps.dist/manager /usr/local/tomcat/webapps/manager && \
+    cp -rv /usr/local/tomcat/webapps.dist/host-manager /usr/local/tomcat/webapps/host-manager && \
+    cp -rv /usr/local/tomcat/webapps.dist/ROOT /usr/local/tomcat/webapps/ROOT && \
+    sed -i 's/<Valve/<\!\-\-\ \n \<Valve/' /usr/local/tomcat/webapps/manager/META-INF/context.xml && \
+    sed -i 's/0:1" \/>/0:1\" \/> \n \-\->/' /usr/local/tomcat/webapps/manager/META-INF/context.xml && \
+    sed -i 's/<Valve/<\!\-\-\ \n \<Valve/' /usr/local/tomcat/webapps/host-manager/META-INF/context.xml && \
+    sed -i 's/0:1" \/>/0:1\" \/> \n \-\->/' /usr/local/tomcat/webapps/host-manager/META-INF/context.xml
+
 
 ### ----------------- SYN -----------------
 

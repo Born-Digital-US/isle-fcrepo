@@ -35,7 +35,7 @@
   <!-- user admin can access manager and admin section both -->
   <user username="${FCREPO_TOMCAT_ADMIN}" password="${FCREPO_TOMCAT_ADMIN_PASSWORD}" roles="admin-gui,admin-script,manager-gui,manager-status,manager-script,manager-jmx" />
 
-  <user username="fedoraUser" password="${FEDORA_USER_PASSWORD}" roles="fedoraUser"/>
-  <user username="fedoraAdmin" password="${FEDORA_ADMIN_PASSWORD}" roles="fedoraAdmin"/>
+  <user username="fedoraUser" password="${FEDORA_USER_PASSWORD}" roles="fedoraUser" />
+  <user username="fedoraAdmin" password="${FEDORA_ADMIN_PASSWORD}" roles="fedoraAdmin" />
 
 </tomcat-users>
