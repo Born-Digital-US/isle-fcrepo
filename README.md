@@ -8,7 +8,7 @@ Designed to used with:
 
 Based on:
 
-* Official Tomcat image: [tomcat:8.5-jdk8](https://github.com/docker-library/tomcat/blob/200fb67e66016f412b5e8428e48e7794dd7faae7/8.5/jdk8/openjdk/Dockerfile)
+* [isle-fcrepo-base](https://github.com/Islandora-Devops/isle-fcrepo-base)
 
 Contains:
 
