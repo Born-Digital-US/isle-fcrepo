@@ -1,4 +1,4 @@
-FROM borndigital/isle-fcrepo-base:mvp3-alpha
+FROM islandora/isle-fcrepo-base:sp4-alpha
 
 ENV CATALINA_HOME=/usr/local/tomcat \
     PATH=$CATALINA_HOME/bin:$PATH \
