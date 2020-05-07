@@ -81,4 +81,3 @@ EXPOSE 8080
 WORKDIR /opt/fcrepo 
 
 ENTRYPOINT ["/init"]
-#CMD ["catalina.sh", "run"]
