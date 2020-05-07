@@ -1,0 +1,12 @@
+[template]
+src = "fcrepo.sql.tpl"
+dest = "/tmp/fcrepo.sql"
+uid = 0
+gid = 0
+mode = "0644"
+keys = [
+  "/fcrepo/db",
+  "/fcrepo/db/user",
+  "/fcrepo/db/password"
+]
+reload_cmd="mysql -h ${FCREPO_DB_HOST} -uroot -p${DB_ROOT_PASSWORD} < /tmp/fcrepo.sql"
